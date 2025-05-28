@@ -10,5 +10,4 @@ class Device(BaseModel):
 class WiFiConfig(BaseModel):
     ssid: str
     password: str
-    device_name: str
     device_address: str

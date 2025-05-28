@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from typing import List
 from bleak import BleakScanner
 from model import Device, WiFiConfig
@@ -19,6 +20,7 @@ scanned_devices = []
 LED_UUID = "12345678-5678-90ab-cdef-1234567890ab"
 SSID_UUID = "22345678-5678-90ab-cdef-1234567890ab"
 PW_UUID = "32345678-5678-90ab-cdef-1234567890ab"
+# WiFi_UUID = "42345678-5678-90ab-cdef-1234567890ab"
 
 @app.get("/scan", response_model=List[Device])
 async def scan_devices():
@@ -43,9 +45,10 @@ async def setup_wifi(config: WiFiConfig):
     uuid_dict = {SSID_UUID: config.ssid, PW_UUID: config.password, LED_UUID: "OFF"}
     print(uuid_dict)
     print("WiFi Config:", config)
-    await bluetooth_Connect(config.device_address, uuid_dict)
+    wifiStatus = await bluetooth_Connect(config.device_address, uuid_dict)
 
-    print(f"Setup Wi-Fi on {config.device_name} with SSID={config.ssid} and Password={config.password}")
+    print(f"Setup Wi-Fi on {config.device_address} with SSID={config.ssid} and Password={config.password}")
+    print("50-WiFi Status:", wifiStatus)
 
-    return {"message": f"Wi-Fi set up to device: {config.device_name}"}
+    return {"message": wifiStatus}
 

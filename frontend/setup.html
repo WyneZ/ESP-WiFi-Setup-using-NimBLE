@@ -8,8 +8,7 @@
   <div id="deviceInfo"></div>
   <form id="wifiForm">
     <label>SSID: <input type="text" id="ssid" required></label><br><br>
-    <label>Password: <input type="password" id="password" required></label><br><br>
-    <label>Name: <input type="name" id="name"></label><br><br>
+    <label>Password: <input type="text" id="password" required></label><br><br>
     <button type="submit">Send Wi-Fi Config</button>
   </form>
   <p id="response"></p>
@@ -17,9 +16,8 @@
   <script>
     // Parse device address from query string
     const urlParams = new URLSearchParams(window.location.search);
-    const deviceName = urlParams.get("name");
     const deviceAddress = urlParams.get("address")
-    document.getElementById("deviceInfo").textContent = `Device Name: ${deviceName}`;
+    document.getElementById("deviceInfo").textContent = `Device Name: ${deviceAddress}`;
 
     const form = document.getElementById("wifiForm");
     const responseEl = document.getElementById("response");
@@ -28,10 +26,6 @@
       e.preventDefault();
       const ssid = document.getElementById("ssid").value;
       const password = document.getElementById("password").value;
-      const name = document.getElementById("name").value;
-      if (name === "") {
-        name = deviceName;
-      }
 
       try {
         const res = await fetch("http://localhost:8000/setup_wifi", {
@@ -42,7 +36,6 @@
           body: JSON.stringify({
             ssid,
             password,
-            device_name: name,
             device_address: deviceAddress
           })
         });
@@ -52,7 +45,9 @@
         }
 
         const data = await res.json();
-        responseEl.textContent = data.message;
+        // if (data.wifiStatus === "false") {
+        //   await fetch(`http://localhost:8000/connect/${data.device_address}`, { method: "POST" }`);
+        // }
       } catch (err) {
         responseEl.textContent = "Failed to send Wi-Fi config.";
       }
